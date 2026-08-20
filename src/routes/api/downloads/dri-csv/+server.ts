@@ -2,6 +2,10 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { RequestHandler } from './$types';
 
+// Runs at build time (see src/routes/+layout.ts) and its output is written to
+// a static file — GitHub Pages has no server to run this on request.
+export const prerender = true;
+
 // Streams the user's own pre-processed CSV from /downloads verbatim (read-only).
 export const GET: RequestHandler = async () => {
 	const filePath = path.resolve(

@@ -2,6 +2,10 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { RequestHandler } from './$types';
 
+// Runs at build time (see src/routes/+layout.ts) and its output is written to
+// a static /api/dri file — GitHub Pages has no server to run this on request.
+export const prerender = true;
+
 // Reads the pre-processed qgis2web export in /data (owned by the user, never
 // modified here) and strips its `var json_DRI_2020_1 = ...;` JS wrapper so it
 // can be served as plain JSON. Cached in memory after the first read since the

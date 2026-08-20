@@ -1,3 +1,4 @@
+import { resolve } from '$app/paths';
 import {
 	availableYears,
 	type DriFeatureCollection,
@@ -28,7 +29,7 @@ class DroughtState {
 	async load() {
 		if (this.data) return;
 		try {
-			const res = await fetch('/api/dri');
+			const res = await fetch(resolve('/api/dri'));
 			if (!res.ok) throw new Error(`Failed to load DRI data (${res.status})`);
 			const fc = (await res.json()) as DriFeatureCollection;
 			this.data = fc;
