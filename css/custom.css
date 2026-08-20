@@ -1,0 +1,133 @@
+/* ================================
+   VN-DRAW Web Application
+   Custom CSS
+   ================================ */
+
+/* Overall page */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Map */
+#map {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto !important;
+    height: auto !important;
+}
+
+/* Header */
+#header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: white;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding: 0 25px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Header title */
+#header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* Sidebar */
+#sidebar {
+    position: absolute;
+    top: 90px;
+    left: 20px;
+    width: 280px;
+    background: white;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Sidebar headings */
+#sidebar h2 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+#sidebar h3 {
+    margin-top: 25px;
+    font-size: 15px;
+}
+
+/* Year selector */
+#year {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: white;
+}
+
+/* Legend */
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+.legend-colour {
+    width: 22px;
+    height: 18px;
+    margin-right: 8px;
+    border: 1px solid #999;
+}
+
+/* Download*/
+
+#download-section {
+    border-top: 1px solid #ddd;
+    margin-top: 20px;
+    padding-top: 15px;
+}
+
+.download-btn {
+    display: inline-block;
+    padding: 8px 14px;
+    margin: 4px 2px;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.download-btn.geojson {
+    background: #4c8c3f;
+}
+
+.download-btn.csv {
+    background: #2864b3;
+}
+
+.download-btn.pdf {
+    background: #c62828;
+}
+
+.download-btn:hover {
+    opacity: 0.85;
+}
