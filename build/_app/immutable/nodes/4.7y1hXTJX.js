@@ -1,1 +1,0 @@
-import{C as e,x as t}from"../chunks/CxqCZHm8.js";import"../chunks/xihTtKlq.js";import{t as n}from"../chunks/DFJWChVQ.js";var r=e(`<p>Questions about VN-DRAW or the underlying data? Reach the team here.</p>`);function i(e){n(e,{title:`Contact`,children:(e,n)=>{var i=r();t(e,i)},$$slots:{default:!0}})}export{i as component};

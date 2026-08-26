@@ -1,1 +1,0 @@
-import{C as e,x as t}from"../chunks/CxqCZHm8.js";import"../chunks/xihTtKlq.js";import{t as n}from"../chunks/DFJWChVQ.js";var r=e(`<p>Research papers, reports and datasets behind VN-DRAW will be listed here.</p>`);function i(e){n(e,{title:`Publications`,children:(e,n)=>{var i=r();t(e,i)},$$slots:{default:!0}})}export{i as component};

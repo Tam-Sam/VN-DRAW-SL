@@ -3,9 +3,9 @@
 	import { resolve } from '$app/paths';
 
 	const tabs = [
+		{ href: resolve('/home'), label: 'Home', icon: '🏠' },
 		{ href: resolve('/'), label: 'Map', icon: '🗺' },
 		{ href: resolve('/publications'), label: 'Publications', icon: '📄' },
-		{ href: resolve('/case-study'), label: 'Case Study', icon: '📊' },
 		{ href: resolve('/contact'), label: 'Contact', icon: '✉' }
 	];
 </script>

@@ -1,1 +1,0 @@
-import{C as e,x as t}from"../chunks/CxqCZHm8.js";import"../chunks/xihTtKlq.js";import{t as n}from"../chunks/DFJWChVQ.js";var r=e(`<p>In-depth case studies of drought events and their regional impact will be published here.</p>`);function i(e){n(e,{title:`Case Study`,children:(e,n)=>{var i=r();t(e,i)},$$slots:{default:!0}})}export{i as component};
