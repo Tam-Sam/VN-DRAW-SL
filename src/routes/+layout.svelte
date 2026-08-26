@@ -2,7 +2,6 @@
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import { page } from '$app/state';
-	import { resolve } from '$app/paths';
 	import Header from '$lib/components/Header.svelte';
 	import TabBar from '$lib/components/TabBar.svelte';
 	import MapView from '$lib/components/MapView.svelte';
@@ -11,10 +10,10 @@
 
 	let { children } = $props();
 
-	// page.url.pathname is the real browser path, which includes the deployed
-	// base path (e.g. "/VN-DRAW-SL/") — compare against resolve('/'), not a
-	// bare "/", or this is always false once the site isn't hosted at the domain root.
-	const isMapRoute = $derived(page.url.pathname === resolve('/'));
+	// page.route.id is the route's definition path ("/", "/home", ...) — stable
+	// regardless of base path or trailingSlash config, unlike page.url.pathname
+	// (which would be e.g. "/VN-DRAW-SL/" or "/home/" and need manual matching).
+	const isMapRoute = $derived(page.route.id === '/');
 </script>
 
 <svelte:head>

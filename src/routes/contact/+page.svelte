@@ -18,7 +18,7 @@
 			affiliation: 'Royal Melbourne Institute of Technology (RMIT) University',
 			department: 'School of Science (Geospatial)',
 			address: 'RMIT, Melbourne VIC 3000, Australia',
-			email: 'member1@example.com'
+			email: 'tien.le3@rmit.edu.au'
 		},
 		{
 			name: 'Chayn Sun',
@@ -57,13 +57,15 @@
 
 <PageShell title="Contact">
 	<section class="block">
-		<h2>Contact</h2>
+		<h2>Contact details</h2>
 		<div class="contact-list">
 			<div class="contact-entry">
 				<span class="role">Corresponding Author</span>
 				<span class="name">Tien Le</span>
 				<a class="detail" href="mailto:tien.le3@rmit.edu.au">tien.le3@rmit.edu.au</a>
-				<span class="detail">RMIT University, School of Science, GPO Box 2476, Melbourne, VIC 3001, Australia</span>
+				<span class="detail"
+					>RMIT University, School of Science, GPO Box 2476, Melbourne, VIC 3001, Australia</span
+				>
 			</div>
 			<div class="contact-entry">
 				<span class="role">Author</span>

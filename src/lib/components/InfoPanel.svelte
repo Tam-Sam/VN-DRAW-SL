@@ -28,18 +28,45 @@
 		return `${min.toFixed(2)} – ${max.toFixed(2)}`;
 	}
 
-	// Chart geometry: fixed 240x112 viewBox, plot area x:[20,220] y:[15,75] for value range [0,1].
+	// Chart geometry: fixed 240x112 viewBox, plot area x:[20,220] y:[15,75].
 	const PLOT_X0 = 20;
 	const PLOT_X1 = 220;
-	const PLOT_Y0 = 15; // value = 1
-	const PLOT_Y1 = 75; // value = 0
+	const PLOT_Y0 = 15; // top of plot area
+	const PLOT_Y1 = 75; // bottom of plot area
 
 	function xFor(i: number, n: number): number {
 		return n <= 1 ? PLOT_X0 : PLOT_X0 + (i * (PLOT_X1 - PLOT_X0)) / (n - 1);
 	}
+
+	// The y-axis zooms to this trend's own min/max (a sparkline, not a chart
+	// meant for cross-province comparison) instead of the full 0–1 DRI range, so
+	// year-to-year and risk-class differences are actually visible instead of
+	// compressed into a sliver — real DRI values cluster tightly (e.g. 0.53–0.64).
+	// Risk category is still carried by dot color (fixed, absolute breakpoints),
+	// never by position alone.
+	const trendDomain = $derived.by(() => {
+		const values = trend.map((p) => p.value).filter((v): v is number => v != null);
+		if (values.length === 0) return { min: 0, max: 1 };
+		const dataMin = Math.min(...values);
+		const dataMax = Math.max(...values);
+		const pad = Math.max((dataMax - dataMin) * 0.25, 0.03);
+		return { min: dataMin - pad, max: dataMax + pad };
+	});
+
 	function yFor(value: number): number {
-		return PLOT_Y1 - value * (PLOT_Y1 - PLOT_Y0);
+		const { min, max } = trendDomain;
+		const span = max - min || 1;
+		return PLOT_Y1 - ((value - min) / span) * (PLOT_Y1 - PLOT_Y0);
 	}
+
+	// Risk-class boundaries (0.3/0.4/0.5/0.6) that fall inside the current zoomed
+	// domain, drawn as reference lines so it's clear exactly where the trend
+	// crosses from one risk class into another.
+	const visibleBoundaries = $derived(
+		RISK_CLASSES.slice(1)
+			.map((c) => c.min)
+			.filter((b) => b > trendDomain.min && b < trendDomain.max)
+	);
 
 	const linePoints = $derived(
 		trend
@@ -89,7 +116,15 @@
 					aria-label="{indicator.toUpperCase()} trend by year"
 				>
 					<line x1={PLOT_X0} y1={PLOT_Y1} x2={PLOT_X1} y2={PLOT_Y1} class="axis-line" />
-					<line x1={PLOT_X0} y1={yFor(0.5)} x2={PLOT_X1} y2={yFor(0.5)} class="grid-line" />
+					{#each visibleBoundaries as boundary (boundary)}
+						<line
+							x1={PLOT_X0}
+							y1={yFor(boundary)}
+							x2={PLOT_X1}
+							y2={yFor(boundary)}
+							class="grid-line"
+						/>
+					{/each}
 					{#if linePoints}
 						<polyline points={linePoints} class="trend-line" />
 					{/if}
