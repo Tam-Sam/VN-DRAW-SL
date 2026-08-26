@@ -139,15 +139,18 @@
 
 <style>
 	.panel {
-		background: var(--surface);
+		/* Matches the page background (not --surface/white) and has no border or
+		   shadow — the pane reads as part of the page, not a bordered card. */
+		background: var(--surface-2);
 		color: var(--ink);
 		border-radius: var(--radius);
-		box-shadow: var(--shadow);
 	}
 
 	.info-panel {
-		width: 300px;
-		padding: 1rem;
+		width: 100%;
+		height: 100%;
+		box-sizing: border-box;
+		padding: 0.75rem;
 		display: flex;
 		flex-direction: column;
 		gap: 1.1rem;
@@ -256,7 +259,7 @@
 	}
 
 	.trend-dot {
-		stroke: var(--surface);
+		stroke: var(--surface-2);
 		stroke-width: 1.5;
 	}
 
@@ -306,7 +309,7 @@
 	}
 
 	.download-btn.disabled {
-		background: var(--surface-2);
+		background: var(--surface);
 		color: var(--ink-muted);
 		cursor: not-allowed;
 	}

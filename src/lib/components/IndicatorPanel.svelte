@@ -67,15 +67,18 @@
 
 <style>
 	.panel {
-		background: var(--surface);
+		/* Matches the page background (not --surface/white) and has no border or
+		   shadow — the pane reads as part of the page, not a bordered card. */
+		background: var(--surface-2);
 		color: var(--ink);
 		border-radius: var(--radius);
-		box-shadow: var(--shadow);
 	}
 
 	.indicator-panel {
-		width: 260px;
-		padding: 1rem;
+		width: 100%;
+		height: 100%;
+		box-sizing: border-box;
+		padding: 0.75rem;
 		display: flex;
 		flex-direction: column;
 		gap: 1.1rem;
@@ -153,7 +156,7 @@
 	.note {
 		font-size: 0.75rem;
 		color: var(--ink-muted);
-		background: var(--surface-2);
+		background: var(--surface);
 		padding: 0.6rem;
 		border-radius: 8px;
 		margin: 0;

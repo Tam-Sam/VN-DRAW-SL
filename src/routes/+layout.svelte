@@ -32,13 +32,14 @@
 			<MapView />
 		</div>
 
-		{#if isMapRoute}
-			<div class="map-chrome">
-				<IndicatorPanel />
-				<div class="chrome-spacer"></div>
-				<InfoPanel />
-			</div>
-		{:else}
+		<div class="side-col left" class:hidden={!isMapRoute}>
+			{#if isMapRoute}<IndicatorPanel />{/if}
+		</div>
+		<div class="side-col right" class:hidden={!isMapRoute}>
+			{#if isMapRoute}<InfoPanel />{/if}
+		</div>
+
+		{#if !isMapRoute}
 			<div class="page-layer">
 				{@render children()}
 			</div>
@@ -59,13 +60,28 @@
 		position: relative;
 		flex: 1;
 		min-height: 0;
+		/* Indicator pane / map / legend pane widths. The legend pane is wider so
+		   its chart and text stay legible; the map takes whatever's left. */
+		--left-col: 15%;
+		--right-col: 20%;
 	}
 
 	.map-layer {
 		position: absolute;
-		inset: 0;
+		/* Only visibility toggles with route, so the map's actual pixel geometry
+		   never changes and there's genuinely no map underneath the side panes
+		   (they're separate columns, not an overlay). Inset by the same gutter as
+		   the panes' own padding, on all four sides, so the rounded corners below
+		   actually show against the page background instead of butting flush
+		   against the header/tab bar/panes. */
+		top: 0.85rem;
+		bottom: 0.85rem;
+		left: calc(var(--left-col) + 0.85rem);
+		right: calc(var(--right-col) + 0.85rem);
+		border-radius: var(--radius);
+		overflow: hidden;
 		/* Establishes a stacking context so Leaflet's internal panes/controls
-		   (which use high explicit z-index values) can't escape above map-chrome. */
+		   (which use high explicit z-index values) can't escape above the side panes. */
 		z-index: 0;
 	}
 
@@ -74,26 +90,29 @@
 		pointer-events: none;
 	}
 
-	.map-chrome {
+	.side-col {
 		position: absolute;
-		inset: 0;
-		z-index: 1;
-		display: flex;
-		gap: 0;
+		top: 0;
+		bottom: 0;
+		box-sizing: border-box;
 		padding: 0.85rem;
-		pointer-events: none;
+		background: var(--surface-2);
+		z-index: 1;
+		overflow-y: auto;
 	}
 
-	.map-chrome > :global(*) {
-		pointer-events: auto;
+	.side-col.left {
+		left: 0;
+		width: var(--left-col);
 	}
 
-	.chrome-spacer {
-		flex: 1;
-		/* Empty, but still a direct child of .map-chrome, so it would otherwise
-		   inherit pointer-events: auto from the rule above and sit on top of the
-		   map — silently blocking scroll-wheel zoom, drag-panning, and clicks
-		   over the entire central map area. */
+	.side-col.right {
+		right: 0;
+		width: var(--right-col);
+	}
+
+	.side-col.hidden {
+		visibility: hidden;
 		pointer-events: none;
 	}
 
