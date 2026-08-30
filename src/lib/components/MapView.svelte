@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import type * as LType from 'leaflet';
 	import 'leaflet/dist/leaflet.css';
 	import { droughtState } from '$lib/state/drought-state.svelte';
@@ -28,6 +28,7 @@
 	let geoJsonLayer: LType.GeoJSON | undefined;
 	let satelliteLayer: LType.TileLayer | undefined;
 	let streetLayer: LType.TileLayer | undefined;
+	let resizeObserver: ResizeObserver | undefined;
 	// Plain (non-reactive) lookup table: internal bookkeeping for the Leaflet
 	// instance, never read by the template, so it doesn't need Svelte reactivity.
 	// eslint-disable-next-line svelte/prefer-svelte-reactivity
@@ -85,8 +86,17 @@
 			(droughtState.basemap === 'satellite' ? satelliteLayer : streetLayer).addTo(map);
 
 			void droughtState.load();
+
+			// The side panels are user-resizable (+layout.svelte), which changes
+			// this container's size without firing a window `resize` event, so
+			// Leaflet's own resize handling never sees it — watch the container
+			// directly instead so tiles/panes stay aligned as it's dragged.
+			resizeObserver = new ResizeObserver(() => map?.invalidateSize());
+			resizeObserver.observe(container);
 		});
 	});
+
+	onDestroy(() => resizeObserver?.disconnect());
 
 	// Build the choropleth layer once the data has loaded (runs once: guarded by geoJsonLayer).
 	$effect(() => {
