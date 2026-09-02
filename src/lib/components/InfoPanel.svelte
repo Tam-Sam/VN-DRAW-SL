@@ -1,25 +1,71 @@
 <script lang="ts">
 	import { droughtState } from '$lib/state/drought-state.svelte';
-	import { RISK_CLASSES, INDICATORS, indicatorValue, riskClassFor } from '$lib/dri';
+	import {
+		INDICATORS,
+		indicatorValue,
+		riskInfoFor,
+		driRiskClasses,
+		continuousStops,
+		type IndicatorId
+	} from '$lib/dri';
 	import { resolve } from '$app/paths';
 
 	const indicator = $derived(droughtState.selectedIndicator);
 	const indicatorLabel = $derived(
 		INDICATORS.find((ind) => ind.id === indicator)?.label ?? indicator.toUpperCase()
 	);
-
-	const province = $derived(droughtState.selectedProvince);
-	const currentValue = $derived(
-		province ? indicatorValue(province, indicator, droughtState.selectedYear) : null
+	const isContinuous = $derived(indicator !== 'dri');
+	const domain = $derived(droughtState.continuousDomain);
+	const isMonthly = $derived(indicator === 'dhi');
+	const periodLabel = $derived(
+		isMonthly
+			? `${String(droughtState.selectedMonth).padStart(2, '0')}/${droughtState.selectedYear}`
+			: `${droughtState.selectedYear}`
 	);
-	const currentRisk = $derived(riskClassFor(currentValue));
+
+	// The selected province is just a name (droughtState.selectedProvinceName),
+	// carried across indicator switches — look its properties up fresh in
+	// whichever dataset is currently active, since each indicator has its own
+	// FeatureCollection (and DHI has one per year on top of that).
+	const province = $derived.by(() => {
+		const name = droughtState.selectedProvinceName;
+		const fc = droughtState.currentData;
+		if (!name || !fc) return null;
+		return fc.features.find((f) => f.properties.ADM1_EN === name)?.properties ?? null;
+	});
+	const currentValue = $derived(
+		province
+			? indicatorValue(province, indicator, droughtState.selectedYear, droughtState.selectedMonth)
+			: null
+	);
+	const currentRisk = $derived(riskInfoFor(currentValue, indicator, domain));
 
 	const trend = $derived.by(() => {
 		if (!province) return [];
 		return droughtState.years.map((year) => ({
 			year,
-			value: indicatorValue(province, indicator, year)
+			value: indicatorValue(province, indicator, year, droughtState.selectedMonth)
 		}));
+	});
+
+	const geoJsonHref = $derived.by(() => {
+		if (indicator === 'dhi')
+			return resolve('/api/dhi/[year]', { year: String(droughtState.selectedYear) });
+		const paths: Record<Exclude<IndicatorId, 'dhi'>, string> = {
+			dri: resolve('/api/dri'),
+			dei: resolve('/api/dei'),
+			dvi: resolve('/api/dvi')
+		};
+		return paths[indicator];
+	});
+	const csvHref = $derived.by(() => {
+		if (indicator === 'dhi') return null; // source CSVs don't cleanly cover 2015-2022, see downloads/data_monthlyDHI
+		const paths: Record<Exclude<IndicatorId, 'dhi'>, string> = {
+			dri: resolve('/api/downloads/dri-csv'),
+			dei: resolve('/api/downloads/dei-csv'),
+			dvi: resolve('/api/downloads/dvi-csv')
+		};
+		return paths[indicator];
 	});
 
 	function rangeLabel(min: number, max: number): string {
@@ -59,13 +105,17 @@
 		return PLOT_Y1 - ((value - min) / span) * (PLOT_Y1 - PLOT_Y0);
 	}
 
-	// Risk-class boundaries (0.3/0.4/0.5/0.6) that fall inside the current zoomed
+	// DRI's discrete class boundaries that fall inside the current zoomed
 	// domain, drawn as reference lines so it's clear exactly where the trend
-	// crosses from one risk class into another.
+	// crosses from one risk class into another. DHI/DEI/DVI are a continuous
+	// gradient with no fixed boundaries, so there's nothing to draw for those.
 	const visibleBoundaries = $derived(
-		RISK_CLASSES.slice(1)
-			.map((c) => c.min)
-			.filter((b) => b > trendDomain.min && b < trendDomain.max)
+		indicator === 'dri'
+			? driRiskClasses()
+					.slice(1)
+					.map((c) => c.min)
+					.filter((b) => b > trendDomain.min && b < trendDomain.max)
+			: []
 	);
 
 	const linePoints = $derived(
@@ -80,15 +130,28 @@
 	<section>
 		<h2>Legend</h2>
 		<p class="legend-title">{indicatorLabel}</p>
-		<div class="legend-list">
-			{#each RISK_CLASSES as risk (risk.label)}
-				<div class="legend-row">
-					<span class="swatch" style:background={risk.color}></span>
-					<span class="legend-label">{risk.label}</span>
-					<span class="legend-range">{rangeLabel(risk.min, risk.max)}</span>
-				</div>
-			{/each}
-		</div>
+		{#if !isContinuous}
+			<div class="legend-list">
+				{#each driRiskClasses() as risk (risk.label)}
+					<div class="legend-row">
+						<span class="swatch" style:background={risk.color}></span>
+						<span class="legend-label">{risk.label}</span>
+						<span class="legend-range">{rangeLabel(risk.min, risk.max)}</span>
+					</div>
+				{/each}
+			</div>
+		{:else if domain}
+			<div
+				class="gradient-bar"
+				style:background="linear-gradient(to right, {continuousStops().join(', ')})"
+			></div>
+			<div class="gradient-labels">
+				<span>{domain.min.toFixed(2)} (Low)</span>
+				<span>{domain.max.toFixed(2)} (High)</span>
+			</div>
+		{:else}
+			<p class="pending-note">Loading data to compute the color scale…</p>
+		{/if}
 	</section>
 
 	<section>
@@ -98,7 +161,7 @@
 				<span class="province-name">{province.ADM1_EN}</span>
 			</div>
 			<div class="stat-row">
-				<span>{indicator.toUpperCase()} ({droughtState.selectedYear})</span>
+				<span>{indicator.toUpperCase()} ({periodLabel})</span>
 				<span class="stat-value" style:color={currentRisk?.color}>
 					{currentValue != null ? currentValue.toFixed(2) : '—'}
 					{#if currentRisk}<span class="risk-badge" style:background={currentRisk.color}
@@ -130,7 +193,7 @@
 					{/if}
 					{#each trend as p, i (p.year)}
 						{#if p.value != null}
-							{@const risk = riskClassFor(p.value)}
+							{@const risk = riskInfoFor(p.value, indicator, domain)}
 							{@const isSelected = p.year === droughtState.selectedYear}
 							<text
 								x={xFor(i, trend.length)}
@@ -163,10 +226,20 @@
 	<section>
 		<h2>Download data</h2>
 		<div class="download-row">
-			<a class="download-btn geojson" href={resolve('/api/dri')} download="VN-DRAW_DRI.geojson"
-				>GeoJSON</a
+			<!-- geoJsonHref/csvHref above are always built with resolve() per indicator;
+			     the lint rule just can't see through the indirection to verify that. -->
+			<!-- eslint-disable svelte/no-navigation-without-resolve -->
+			<a
+				class="download-btn geojson"
+				href={geoJsonHref}
+				download="VN-DRAW_{indicator.toUpperCase()}.geojson">GeoJSON</a
 			>
-			<a class="download-btn csv" href={resolve('/api/downloads/dri-csv')} download>CSV</a>
+			{#if csvHref}
+				<a class="download-btn csv" href={csvHref} download>CSV</a>
+			{:else}
+				<span class="download-btn disabled" title="Not yet available">CSV</span>
+			{/if}
+			<!-- eslint-enable svelte/no-navigation-without-resolve -->
 			<span class="download-btn disabled" title="Not yet available">Metadata (PDF)</span>
 		</div>
 	</section>
@@ -210,6 +283,29 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.3rem;
+	}
+
+	.pending-note {
+		font-size: 0.78rem;
+		color: var(--ink-muted);
+		background: var(--surface);
+		padding: 0.6rem;
+		border-radius: 8px;
+		margin: 0;
+	}
+
+	.gradient-bar {
+		height: 14px;
+		border-radius: 999px;
+	}
+
+	.gradient-labels {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.75rem;
+		color: var(--ink-muted);
+		margin-top: 0.3rem;
+		font-variant-numeric: tabular-nums;
 	}
 
 	.legend-row {

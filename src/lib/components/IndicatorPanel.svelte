@@ -1,6 +1,14 @@
 <script lang="ts">
 	import { droughtState, type Basemap } from '$lib/state/drought-state.svelte';
 	import { INDICATORS } from '$lib/dri';
+
+	const NOTES: Record<string, string> = {
+		dri: 'DRI is the composite of Hazard, Exposure and Vulnerability.',
+		dhi: 'DHI is monthly — pick a year below and a month here.',
+		dei: 'DEI reflects exposure of agricultural land and population to drought.',
+		dvi: 'DVI reflects socio-economic vulnerability to drought impacts.'
+	};
+	const note = $derived(NOTES[droughtState.selectedIndicator]);
 </script>
 
 <aside class="panel indicator-panel">
@@ -48,6 +56,20 @@
 		{/if}
 	</section>
 
+	{#if droughtState.selectedIndicator === 'dhi'}
+		<section>
+			<h2><span class="icon">📆</span> Month</h2>
+			<select
+				value={droughtState.selectedMonth}
+				onchange={(e) => (droughtState.selectedMonth = Number(e.currentTarget.value))}
+			>
+				{#each Array.from({ length: 12 }, (_, i) => i + 1) as m (m)}
+					<option value={m}>{String(m).padStart(2, '0')}</option>
+				{/each}
+			</select>
+		</section>
+	{/if}
+
 	<section>
 		<h2><span class="icon">🗺</span> Basemap</h2>
 		<select
@@ -59,10 +81,15 @@
 		</select>
 	</section>
 
-	<p class="note">
-		DRI is the composite of Hazard, Exposure and Vulnerability, sourced from the pre-processed
-		2015–2022 provincial dataset.
-	</p>
+	<section>
+		<h2><span class="icon">📍</span> Boundaries</h2>
+		<label class="checkbox-row">
+			<input type="checkbox" bind:checked={droughtState.showNewBoundary} />
+			New provincial boundaries (2025)
+		</label>
+	</section>
+
+	<p class="note">{note}</p>
 </aside>
 
 <style>
@@ -111,6 +138,14 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-size: 0.88rem;
+		cursor: pointer;
+	}
+
+	.checkbox-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.85rem;
 		cursor: pointer;
 	}
 

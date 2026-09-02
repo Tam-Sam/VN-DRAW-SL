@@ -1,1 +1,0 @@
-import{F as e,Q as t,S as n,V as r,v as i,w as a,x as o,z as s}from"./EKRdU4Ru.js";import"./xihTtKlq.js";var c=a(`<div class="page-shell svelte-12spi07"><h1 class="svelte-12spi07"> </h1> <div class="body svelte-12spi07"><!></div></div>`);function l(a,l){var u=c(),d=s(u),f=s(d,!0);t(d);var p=r(d,2),m=s(p);i(m,()=>l.children),t(p),t(u),e(()=>o(f,l.title)),n(a,u)}export{l as t};

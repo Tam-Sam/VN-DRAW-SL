@@ -6,14 +6,14 @@
 	let openInfo = $state<'help' | 'about' | null>(null);
 
 	const matches = $derived.by(() => {
-		const fc = droughtState.data;
+		const fc = droughtState.currentData;
 		if (!fc || !query.trim()) return [];
 		const q = query.trim().toLowerCase();
 		return fc.features.filter((f) => f.properties.ADM1_EN.toLowerCase().includes(q)).slice(0, 8);
 	});
 
-	function pick(pcode: string, name: string) {
-		droughtState.focusProvince?.(pcode);
+	function pick(name: string) {
+		droughtState.focusProvince?.(name);
 		query = name;
 		showResults = false;
 	}
@@ -38,12 +38,9 @@
 		/>
 		{#if showResults && matches.length}
 			<ul class="search-results">
-				{#each matches as f (f.properties.ADM1_PCODE)}
+				{#each matches as f (f.properties.ADM1_EN)}
 					<li>
-						<button
-							type="button"
-							onclick={() => pick(f.properties.ADM1_PCODE, f.properties.ADM1_EN)}
-						>
+						<button type="button" onclick={() => pick(f.properties.ADM1_EN)}>
 							{f.properties.ADM1_EN}
 						</button>
 					</li>

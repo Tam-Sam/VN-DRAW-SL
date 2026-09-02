@@ -4,4 +4,4 @@ import type { RequestHandler } from './$types';
 export const prerender = true;
 
 export const GET: RequestHandler = async () =>
-	csvResponse(['data_DRI', 'Constant_yearlyDRI15to22.csv'], 'VN-DRAW_DRI_2015-2022.csv');
+	csvResponse(['data_DVI', 'DVI15to22_PCA.csv'], 'VN-DRAW_DVI_2015-2022.csv');
