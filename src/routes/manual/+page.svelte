@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	import PageShell from '$lib/components/PageShell.svelte';
 
 	const workflowSteps = [
@@ -77,7 +78,7 @@
 				dynamics of risk in the Vietnam context. The research workflow is demonstrated below.
 			</p>
 			<figure>
-				<img src="/manual/image1.png" alt="Research methodology workflow" />
+				<img src={`${base}/manual/image1.png`} alt="Research methodology workflow" />
 				<figcaption>Figure 1. Research Methodology</figcaption>
 			</figure>
 		</section>
@@ -89,7 +90,7 @@
 				web-hosting infrastructure, primarily combining QGIS, the qgis2web plugin, and GitHub Pages.
 			</p>
 			<figure>
-				<img src="/manual/image2.png" alt="VN-DRAW web portal design flow" />
+				<img src={`${base}/manual/image2.png`} alt="VN-DRAW web portal design flow" />
 				<figcaption>Figure 2. Web Portal Design Flow</figcaption>
 			</figure>
 
@@ -192,7 +193,7 @@
 			</div>
 
 			<figure>
-				<img src="/manual/image3.jpeg" alt="VN-DRAW web portal interface" />
+				<img src={`${base}/manual/image3.jpeg`} alt="VN-DRAW web portal interface" />
 				<figcaption>Figure 3. VN-DRAW Web Portal Interface</figcaption>
 			</figure>
 		</section>
