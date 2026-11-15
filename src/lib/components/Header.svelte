@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { droughtState } from '$lib/state/drought-state.svelte';
+	import rmitLogo from '$lib/assets/logos/rmit-university-logo-svg-vector.svg';
 
 	let query = $state('');
 	let showResults = $state(false);
@@ -26,6 +27,10 @@
 			<strong>VN-DRAW</strong>
 			<span>Vietnam Drought Risk Assessment and Warning portal</span>
 		</div>
+	</div>
+
+	<div class="partner-logo" aria-label="RMIT University">
+		<img src={rmitLogo} alt="RMIT University" />
 	</div>
 
 	<div class="search-wrap">
@@ -117,6 +122,24 @@
 	.brand-text span {
 		font-size: 0.72rem;
 		color: var(--header-ink-muted);
+	}
+
+	.partner-logo {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		height: 80px;
+		width: 80px;
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.partner-logo img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
 	}
 
 	.search-wrap {
@@ -216,4 +239,23 @@
 		cursor: pointer;
 	}
 
+	@media (max-width: 640px) {
+		.partner-logo {
+			position: static;
+			transform: none;
+			flex: 0 0 34px;
+			height: 34px;
+			width: 34px;
+			order: 2;
+		}
+
+		.search-wrap {
+			order: 3;
+			margin-left: 0;
+		}
+
+		.header-actions {
+			order: 4;
+		}
+	}
 </style>
