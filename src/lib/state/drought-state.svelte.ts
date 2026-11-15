@@ -56,6 +56,10 @@ class DroughtState {
 	loading = $derived(this.loadingKeys.has(this.currentKey));
 	error = $derived(this.errorsByKey.get(this.currentKey) ?? null);
 
+	dataFor(indicator: IndicatorId, year: number): DriFeatureCollection | null {
+		return this.datasets.get(cacheKey(indicator, year)) ?? null;
+	}
+
 	// DHI has a fixed file per year (always the full range); DRI/DEI/DVI's
 	// available years depend on which columns actually have data.
 	years = $derived.by(() => {

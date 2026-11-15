@@ -10,6 +10,81 @@
 	} from '$lib/dri';
 	import { resolve } from '$app/paths';
 
+	type ProvinceRegion =
+		| 'Northwest'
+		| 'Northeast'
+		| 'Central Highland'
+		| 'Mekong Delta'
+		| 'North Central'
+		| 'South Central'
+		| 'Southeast';
+
+	const PROVINCE_REGIONS: Record<string, ProvinceRegion> = {
+		'Dien Bien': 'Northwest',
+		'Hoa Binh': 'Northwest',
+		'Lai Chau': 'Northwest',
+		'Lao Cai': 'Northwest',
+		'Son La': 'Northwest',
+		'Yen Bai': 'Northwest',
+		'Bac Giang': 'Northeast',
+		'Bac Kan': 'Northeast',
+		'Bac Ninh': 'Northeast',
+		'Cao Bang': 'Northeast',
+		'Ha Giang': 'Northeast',
+		'Ha Nam': 'Northeast',
+		'Ha Noi': 'Northeast',
+		'Hai Duong': 'Northeast',
+		'Hai Phong': 'Northeast',
+		'Hung Yen': 'Northeast',
+		'Lang Son': 'Northeast',
+		'Nam Dinh': 'Northeast',
+		'Ninh Binh': 'Northeast',
+		'Phu Tho': 'Northeast',
+		'Quang Ninh': 'Northeast',
+		'Thai Binh': 'Northeast',
+		'Thai Nguyen': 'Northeast',
+		'Tuyen Quang': 'Northeast',
+		'Vinh Phuc': 'Northeast',
+		'Dak Lak': 'Central Highland',
+		'Dak Nong': 'Central Highland',
+		'Gia Lai': 'Central Highland',
+		'Kon Tum': 'Central Highland',
+		'Lâm Đồng': 'Central Highland',
+		'An Giang': 'Mekong Delta',
+		'Bac Lieu': 'Mekong Delta',
+		'Ben Tre': 'Mekong Delta',
+		'Ca Mau': 'Mekong Delta',
+		'Can Tho': 'Mekong Delta',
+		'Dong Thap': 'Mekong Delta',
+		'Hau Giang': 'Mekong Delta',
+		'Kien Giang': 'Mekong Delta',
+		'Long An': 'Mekong Delta',
+		'Soc Trang': 'Mekong Delta',
+		'Tien Giang': 'Mekong Delta',
+		'Tra Vinh': 'Mekong Delta',
+		'Vinh Long': 'Mekong Delta',
+		'Ha Tinh': 'North Central',
+		'Nghe An': 'North Central',
+		'Quang Binh': 'North Central',
+		'Quang Tri': 'North Central',
+		'Thanh Hoa': 'North Central',
+		'Thua Thien Hue': 'North Central',
+		'Binh Dinh': 'South Central',
+		'Binh Thuan': 'South Central',
+		'Da Nang': 'South Central',
+		'Khanh Hoa': 'South Central',
+		'Ninh Thuan': 'South Central',
+		'Phu Yen': 'South Central',
+		'Quang Nam': 'South Central',
+		'Quang Ngai': 'South Central',
+		'Ba Ria - Vung Tau': 'Southeast',
+		'Binh Duong': 'Southeast',
+		'Binh Phuoc': 'Southeast',
+		'Dong Nai': 'Southeast',
+		'Ho Chi Minh': 'Southeast',
+		'Tay Ninh': 'Southeast'
+	};
+
 	const indicator = $derived(droughtState.selectedIndicator);
 	const indicatorLabel = $derived(
 		INDICATORS.find((ind) => ind.id === indicator)?.label ?? indicator.toUpperCase()
@@ -33,6 +108,11 @@
 		if (!name || !fc) return null;
 		return fc.features.find((f) => f.properties.ADM1_EN === name)?.properties ?? null;
 	});
+	const provinceRegion = $derived(
+		droughtState.selectedProvinceName
+			? (PROVINCE_REGIONS[droughtState.selectedProvinceName] ?? null)
+			: null
+	);
 	const currentValue = $derived(
 		province
 			? indicatorValue(province, indicator, droughtState.selectedYear, droughtState.selectedMonth)
@@ -41,11 +121,32 @@
 	const currentRisk = $derived(riskInfoFor(currentValue, indicator, domain));
 
 	const trend = $derived.by(() => {
+		const name = droughtState.selectedProvinceName;
+		if (!name) return [];
+		if (indicator === 'dhi') {
+			return droughtState.years.map((year) => {
+				const data = droughtState.dataFor('dhi', year);
+				const properties = data?.features.find((f) => f.properties.ADM1_EN === name)?.properties;
+				return {
+					year,
+					value: properties
+						? indicatorValue(properties, indicator, year, droughtState.selectedMonth)
+						: null
+				};
+			});
+		}
 		if (!province) return [];
 		return droughtState.years.map((year) => ({
 			year,
 			value: indicatorValue(province, indicator, year, droughtState.selectedMonth)
 		}));
+	});
+
+	$effect(() => {
+		if (indicator !== 'dhi') return;
+		for (const year of droughtState.years) {
+			void droughtState.ensureLoaded('dhi', year);
+		}
 	});
 
 	const geoJsonHref = $derived.by(() => {
@@ -223,13 +324,25 @@
 		{/if}
 	</section>
 
-	<section>
+	<section class="region-section">
+		<h2>Province location category</h2>
+		{#if province}
+			<div class="region-value">
+				<span class="province-name">{province.ADM1_EN}</span>
+				<span class="region-badge">{provinceRegion ?? 'Unassigned'}</span>
+			</div>
+		{:else}
+			<p class="empty-hint">Click a province on the map to see its location category.</p>
+		{/if}
+	</section>
+
+	<!-- <section>
 		<h2>Download data</h2>
-		<div class="download-row">
-			<!-- geoJsonHref/csvHref above are always built with resolve() per indicator;
+		<div class="download-row"> -->
+	<!-- geoJsonHref/csvHref above are always built with resolve() per indicator;
 			     the lint rule just can't see through the indirection to verify that. -->
-			<!-- eslint-disable svelte/no-navigation-without-resolve -->
-			<a
+	<!-- eslint-disable svelte/no-navigation-without-resolve -->
+	<!-- <a
 				class="download-btn geojson"
 				href={geoJsonHref}
 				download="VN-DRAW_{indicator.toUpperCase()}.geojson">GeoJSON</a
@@ -240,9 +353,9 @@
 				<span class="download-btn disabled" title="Not yet available">CSV</span>
 			{/if}
 			<!-- eslint-enable svelte/no-navigation-without-resolve -->
-			<span class="download-btn disabled" title="Not yet available">Metadata (PDF)</span>
+	<!-- <span class="download-btn disabled" title="Not yet available">Metadata (PDF)</span>
 		</div>
-	</section>
+	</section> -->
 </aside>
 
 <style>
@@ -355,6 +468,28 @@
 		font-size: 0.82rem;
 		color: var(--ink-muted);
 		margin: 0;
+	}
+
+	.region-section {
+		margin-top: auto;
+		padding-top: 0.9rem;
+		border-top: 1px solid var(--border);
+	}
+
+	.region-value {
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+	}
+
+	.region-badge {
+		align-self: flex-start;
+		padding: 0.25rem 0.6rem;
+		border-radius: 999px;
+		background: var(--accent);
+		color: white;
+		font-size: 0.75rem;
+		font-weight: 600;
 	}
 
 	.download-row {
