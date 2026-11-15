@@ -39,6 +39,10 @@
 		return `rgba(${red}, ${green}, ${blue}, 0.5)`;
 	}
 
+	function warningTextColor(label: string): string {
+		return label === 'Low' || label === 'Moderate' ? 'var(--ink)' : 'white';
+	}
+
 	const PROVINCE_REGIONS: Record<string, ProvinceRegion> = {
 		'Dien Bien': 'Northwest',
 		'Hoa Binh': 'Northwest',
@@ -330,12 +334,6 @@
 	);
 	const isContinuous = $derived(indicator !== 'dri');
 	const domain = $derived(droughtState.continuousDomain);
-	const isMonthly = $derived(indicator === 'dhi');
-	const periodLabel = $derived(
-		isMonthly
-			? `${String(droughtState.selectedMonth).padStart(2, '0')}/${droughtState.selectedYear}`
-			: `${droughtState.selectedYear}`
-	);
 
 	// The selected province is just a name (droughtState.selectedProvinceName),
 	// carried across indicator switches — look its properties up fresh in
@@ -361,6 +359,9 @@
 			: null
 	);
 	const currentRisk = $derived(riskInfoFor(currentValue, indicator, domain));
+	const riskDisplayColor = $derived(
+		currentRisk?.label === 'Moderate' ? '#b8860b' : currentRisk?.color
+	);
 
 	const trend = $derived.by(() => {
 		const name = droughtState.selectedProvinceName;
@@ -497,24 +498,32 @@
 		{/if}
 	</section> -->
 
+	{#if province && currentRisk}
+		<div
+			class="drought-warning"
+			style:background={currentRisk.color}
+			style:color={warningTextColor(currentRisk.label)}
+		>
+			Drought warning
+		</div>
+	{/if}
+
 	<section>
-		<h2>Province information</h2>
 		{#if province}
 			<div class="province-row">
 				<span class="province-name">{province.ADM1_EN}</span>
 			</div>
-			<div class="stat-row">
-				<span>{indicator.toUpperCase()} ({periodLabel})</span>
-				<span class="stat-value" style:color={currentRisk?.color}>
-					{currentValue != null ? currentValue.toFixed(2) : '—'}
-					{#if currentRisk}<span class="risk-badge" style:background={currentRisk.color}
-							>{currentRisk.label}</span
-						>{/if}
-				</span>
-			</div>
+			{#if currentRisk}
+				<div class="risk-level">
+					<span>Risk level: </span>
+					<span class="risk-detail" style:color={riskDisplayColor}
+						>Class {currentRisk.label} ({currentValue?.toFixed(2) ?? '—'})</span
+					>
+				</div>
+			{/if}
 
 			{#if trend.length}
-				<p class="chart-title">{indicator.toUpperCase()} trend ({province.ADM1_EN})</p>
+				<p class="chart-title">Drought Trend ({indicator.toUpperCase()})</p>
 				<svg
 					class="trend-chart"
 					viewBox="0 0 240 112"
@@ -656,33 +665,33 @@
 		font-size: 1rem;
 	}
 
-	.stat-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		font-size: 0.85rem;
+	.risk-level {
 		margin-top: 0.5rem;
+		font-size: 0.9rem;
+		font-weight: 800;
+		color: var(--ink);
 	}
 
-	.stat-value {
-		font-weight: 700;
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-	}
-
-	.risk-badge {
-		color: white;
-		font-size: 0.68rem;
-		font-weight: 600;
-		padding: 0.1rem 0.45rem;
-		border-radius: 999px;
+	.risk-detail {
+		font-weight: 800;
 	}
 
 	.chart-title {
-		font-size: 0.78rem;
-		color: var(--ink-muted);
+		font-size: 0.94rem;
+		font-weight: 700;
+		color: var(--ink);
 		margin: 0.9rem 0 0.2rem;
+	}
+
+	.drought-warning {
+		width: 100%;
+		padding: 0.4rem 0.85rem;
+		border-radius: 3px;
+		font-size: 1.08rem;
+		font-weight: 800;
+		text-align: center;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
 	}
 
 	.trend-chart {
