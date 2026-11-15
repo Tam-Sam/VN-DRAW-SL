@@ -19,6 +19,26 @@
 		| 'South Central'
 		| 'Southeast';
 
+	type Recommendation = {
+		text: string;
+		severity: 'low' | 'moderate' | 'high' | 'urgent';
+		color: string;
+	};
+
+	const recommendation = (
+		text: string,
+		severity: Recommendation['severity'],
+		color: string
+	): Recommendation => ({ text, severity, color });
+
+	function translucent(hex: string): string {
+		const value = parseInt(hex.slice(1), 16);
+		const red = (value >> 16) & 255;
+		const green = (value >> 8) & 255;
+		const blue = value & 255;
+		return `rgba(${red}, ${green}, ${blue}, 0.5)`;
+	}
+
 	const PROVINCE_REGIONS: Record<string, ProvinceRegion> = {
 		'Dien Bien': 'Northwest',
 		'Hoa Binh': 'Northwest',
@@ -85,6 +105,225 @@
 		'Tay Ninh': 'Southeast'
 	};
 
+	const RECOMMENDATIONS_BY_REGION: Record<ProvinceRegion, Recommendation[]> = {
+		Northwest: [
+			recommendation(
+				'Conduct more detailed drought risk research on specific regional drought patterns and impacts.',
+				'low',
+				'#1a9641'
+			),
+			recommendation(
+				'Enhance monitoring of seasonal drought patterns to track drought onset and plan critical crop activities, such as sowing and harvesting, accordingly.',
+				'low',
+				'#a6d96a'
+			),
+			recommendation(
+				'Invest in drought-tolerant crop varieties suitable for local conditions.',
+				'moderate',
+				'#ffffc0'
+			),
+			recommendation(
+				'Improve irrigation infrastructure and efficient water management practices for drought periods.',
+				'high',
+				'#fdae61'
+			),
+			recommendation(
+				'Diversify economic activities by encouraging non-agricultural livelihoods to reduce dependence on farming.',
+				'moderate',
+				'#ffffc0'
+			),
+			recommendation(
+				'Strengthen agricultural education and training toward drought-resistant agricultural practices for farmers.',
+				'moderate',
+				'#a6d96a'
+			),
+			recommendation(
+				'Provide post-drought financial relief to support affected farmers and promote drought insurance programs.',
+				'urgent',
+				'#d7191c'
+			)
+		],
+		Northeast: [
+			recommendation(
+				'Conduct more detailed drought risk research on specific regional drought patterns and impacts.',
+				'low',
+				'#1a9641'
+			),
+			recommendation(
+				'Enhance monitoring of seasonal drought patterns to track drought onset and plan critical crop activities, such as sowing and harvesting, accordingly.',
+				'low',
+				'#a6d96a'
+			),
+			recommendation(
+				'Invest in drought-tolerant crop varieties suitable for local conditions.',
+				'moderate',
+				'#ffffc0'
+			),
+			recommendation(
+				'Improve irrigation infrastructure and efficient water management practices for drought periods.',
+				'high',
+				'#fdae61'
+			),
+			recommendation(
+				'Diversify economic activities by encouraging non-agricultural livelihoods to reduce dependence on farming.',
+				'moderate',
+				'#ffffc0'
+			),
+			recommendation(
+				'Strengthen agricultural education and training toward drought-resistant agricultural practices for farmers.',
+				'moderate',
+				'#a6d96a'
+			),
+			recommendation(
+				'Provide post-drought financial relief to support affected farmers and promote drought insurance programs.',
+				'urgent',
+				'#d7191c'
+			)
+		],
+		'Central Highland': [
+			recommendation(
+				'Conduct more detailed drought risk research on specific regional drought patterns and impacts.',
+				'low',
+				'#1a9641'
+			),
+			recommendation(
+				'Enhance monitoring of seasonal drought patterns to track drought onset and plan critical crop activities, such as sowing and harvesting, accordingly.',
+				'low',
+				'#a6d96a'
+			),
+			recommendation(
+				'Invest in drought-tolerant crop varieties suitable for local conditions.',
+				'moderate',
+				'#ffffc0'
+			),
+			recommendation(
+				'Improve irrigation infrastructure and efficient water management practices for drought periods.',
+				'high',
+				'#fdae61'
+			),
+			recommendation(
+				'Diversify economic activities by encouraging non-agricultural livelihoods to reduce dependence on farming.',
+				'moderate',
+				'#ffffc0'
+			),
+			recommendation(
+				'Strengthen agricultural education and training toward drought-resistant agricultural practices for farmers.',
+				'moderate',
+				'#a6d96a'
+			),
+			recommendation(
+				'Provide post-drought financial relief to support affected farmers and promote drought insurance programs.',
+				'urgent',
+				'#d7191c'
+			)
+		],
+		'Mekong Delta': [
+			recommendation(
+				'Conduct more detailed drought risk research on specific regional drought patterns and impacts.',
+				'low',
+				'#1a9641'
+			),
+			recommendation(
+				'Enhance monitoring of seasonal drought patterns to track drought onset and plan critical crop activities, such as sowing and harvesting, accordingly.',
+				'low',
+				'#a6d96a'
+			),
+			recommendation(
+				'Invest in drought-tolerant crop varieties suitable for local conditions.',
+				'moderate',
+				'#ffffc0'
+			),
+			recommendation(
+				'Improve irrigation infrastructure and efficient water management practices for drought periods.',
+				'high',
+				'#fdae61'
+			),
+			recommendation(
+				'Diversify economic activities by encouraging non-agricultural livelihoods to reduce dependence on farming.',
+				'moderate',
+				'#ffffc0'
+			),
+			recommendation(
+				'Strengthen agricultural education and training toward drought-resistant agricultural practices for farmers.',
+				'moderate',
+				'#a6d96a'
+			),
+			recommendation(
+				'Provide post-drought financial relief to support affected farmers and promote drought insurance programs.',
+				'urgent',
+				'#d7191c'
+			)
+		],
+		'North Central': [
+			recommendation(
+				'Encourage further drought risk research to refine adaptation strategies.',
+				'low',
+				'#1a9641'
+			),
+			recommendation(
+				'Continue monitoring typical seasonal drought patterns to support crop timing practices.',
+				'low',
+				'#a6d96a'
+			),
+			recommendation('Shift toward less agriculture-dependent work.', 'moderate', '#ffffc0'),
+			recommendation(
+				'Build community knowledge and capacity for dealing with seasonal droughts and resilience-building practices.',
+				'high',
+				'#fdae61'
+			),
+			recommendation(
+				'Implement modern irrigation technologies to optimize water usage, especially in the South Central region.',
+				'urgent',
+				'#d7191c'
+			)
+		],
+		'South Central': [
+			recommendation(
+				'Encourage further drought risk research to refine adaptation strategies.',
+				'low',
+				'#1a9641'
+			),
+			recommendation(
+				'Continue monitoring typical seasonal drought patterns to support crop timing practices.',
+				'low',
+				'#a6d96a'
+			),
+			recommendation('Shift toward less agriculture-dependent work.', 'moderate', '#ffffc0'),
+			recommendation(
+				'Build community knowledge and capacity for dealing with seasonal droughts and resilience-building practices.',
+				'high',
+				'#fdae61'
+			),
+			recommendation(
+				'Implement modern irrigation technologies to optimize water usage, especially in the South Central region.',
+				'urgent',
+				'#d7191c'
+			)
+		],
+		Southeast: [
+			recommendation(
+				'Continue monitoring to ensure preparedness, with less emphasis on immediate agricultural impacts.',
+				'low',
+				'#1a9641'
+			),
+			recommendation(
+				'Expand economic activities into more sustainable and diversified sectors.',
+				'moderate',
+				'#a6d96a'
+			),
+			recommendation(
+				'Focus on water efficiency and recycling in industrial operations.',
+				'high',
+				'#fdae61'
+			),
+			recommendation(
+				'Integrate drought resilience into urban development plans, such as sustainable water infrastructure.',
+				'urgent',
+				'#d7191c'
+			)
+		]
+	};
+
 	const indicator = $derived(droughtState.selectedIndicator);
 	const indicatorLabel = $derived(
 		INDICATORS.find((ind) => ind.id === indicator)?.label ?? indicator.toUpperCase()
@@ -112,6 +351,9 @@
 		droughtState.selectedProvinceName
 			? (PROVINCE_REGIONS[droughtState.selectedProvinceName] ?? null)
 			: null
+	);
+	const provinceRecommendations = $derived(
+		provinceRegion ? RECOMMENDATIONS_BY_REGION[provinceRegion] : []
 	);
 	const currentValue = $derived(
 		province
@@ -324,6 +566,29 @@
 		{/if}
 	</section>
 
+	<section class="recommendation-section">
+		<h2>Adaptation Recommendations</h2>
+		{#if province}
+			{#if provinceRecommendations.length}
+				<div class="recommendation-list">
+					{#each provinceRecommendations as item}
+						<div
+							class="recommendation"
+							style:background={translucent(item.color)}
+							style:color="var(--ink)"
+						>
+							<span>{item.text}</span>
+						</div>
+					{/each}
+				</div>
+			{:else}
+				<p class="empty-hint">No recommendations are available for this region.</p>
+			{/if}
+		{:else}
+			<p class="empty-hint">Click a province on the map to see adaptation recommendations.</p>
+		{/if}
+	</section>
+
 	<section class="region-section">
 		<h2>Province location category</h2>
 		{#if province}
@@ -470,6 +735,25 @@
 		margin: 0;
 	}
 
+	.recommendation-section {
+		flex-shrink: 0;
+	}
+
+	.recommendation-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+	}
+
+	.recommendation {
+		display: flex;
+		align-items: flex-start;
+		padding: 0.55rem 0.65rem;
+		border-radius: 6px;
+		font-size: 0.76rem;
+		line-height: 1.4;
+	}
+
 	.region-section {
 		margin-top: auto;
 		padding-top: 0.9rem;
@@ -490,35 +774,5 @@
 		color: white;
 		font-size: 0.75rem;
 		font-weight: 600;
-	}
-
-	.download-row {
-		display: flex;
-		flex-direction: column;
-		gap: 0.4rem;
-	}
-
-	.download-btn {
-		text-align: center;
-		font-size: 0.82rem;
-		font-weight: 600;
-		padding: 0.45rem;
-		border-radius: 6px;
-		text-decoration: none;
-		color: white;
-	}
-
-	.download-btn.geojson {
-		background: #16a34a;
-	}
-
-	.download-btn.csv {
-		background: #2563eb;
-	}
-
-	.download-btn.disabled {
-		background: var(--surface);
-		color: var(--ink-muted);
-		cursor: not-allowed;
 	}
 </style>
