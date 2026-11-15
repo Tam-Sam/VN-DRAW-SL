@@ -127,7 +127,7 @@
 </script>
 
 <aside class="panel info-panel">
-	<section>
+	<!-- <section>
 		<h2>Legend</h2>
 		<p class="legend-title">{indicatorLabel}</p>
 		{#if !isContinuous}
@@ -152,7 +152,7 @@
 		{:else}
 			<p class="pending-note">Loading data to compute the color scale…</p>
 		{/if}
-	</section>
+	</section> -->
 
 	<section>
 		<h2>Province information</h2>
@@ -271,64 +271,6 @@
 		letter-spacing: 0.04em;
 		color: var(--ink-muted);
 		margin: 0 0 0.5rem;
-	}
-
-	.legend-title {
-		font-size: 0.85rem;
-		font-weight: 600;
-		margin: 0 0 0.5rem;
-	}
-
-	.legend-list {
-		display: flex;
-		flex-direction: column;
-		gap: 0.3rem;
-	}
-
-	.pending-note {
-		font-size: 0.78rem;
-		color: var(--ink-muted);
-		background: var(--surface);
-		padding: 0.6rem;
-		border-radius: 8px;
-		margin: 0;
-	}
-
-	.gradient-bar {
-		height: 14px;
-		border-radius: 999px;
-	}
-
-	.gradient-labels {
-		display: flex;
-		justify-content: space-between;
-		font-size: 0.75rem;
-		color: var(--ink-muted);
-		margin-top: 0.3rem;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.legend-row {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.82rem;
-	}
-
-	.swatch {
-		width: 14px;
-		height: 14px;
-		border-radius: 3px;
-		flex-shrink: 0;
-	}
-
-	.legend-label {
-		flex: 1;
-	}
-
-	.legend-range {
-		color: var(--ink-muted);
-		font-variant-numeric: tabular-nums;
 	}
 
 	.province-name {

@@ -7,9 +7,11 @@
 	// which is "/home/" once trailingSlash is 'always', never equal to a bare href).
 	const tabs = [
 		{ routeId: '/home', href: resolve('/home'), label: 'Home', icon: '🏠' },
-		{ routeId: '/', href: resolve('/'), label: 'Map', icon: '🗺' },
-		{ routeId: '/publications', href: resolve('/publications'), label: 'Publications', icon: '📄' },
-		{ routeId: '/contact', href: resolve('/contact'), label: 'Contact', icon: '✉' }
+		{ routeId: '/', href: resolve('/'), label: 'Map', icon: '🗺️' },
+		{ routeId: '/manual', href: resolve('/manual'), label: 'User\'s Manual', icon: '📄' },
+		{ routeId: '/publications', href: resolve('/publications'), label: 'Publications', icon: '📚️' },
+		{ routeId: '/download', href: resolve('/download'), label: 'Download', icon: '💾' },
+		{ routeId: '/contact', href: resolve('/contact'), label: 'Contact', icon: '📬️' }
 	];
 </script>
 
